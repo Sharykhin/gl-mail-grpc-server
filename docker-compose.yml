@@ -9,3 +9,14 @@ services:
       dockerfile: .docker/golang/Dockerfile
     env_file:
       - ./.docker/golang/.env
+    links:
+      - gl-mail-grpc-server-mysql
+    depends_on:
+      - gl-mail-grpc-server-mysql
+
+  gl-mail-grpc-server-mysql:
+    container_name: gl-mail-grpc-server-mysql
+    image: gl-mail-grpc-server-mysql
+    build: .docker/mysql
+    env_file:
+      - ./.docker/mysql/.env

@@ -28,6 +28,12 @@ Docker:
 docker-compose up
 ```
 
+TODO:
+-----
+
+Current mysql is added for some test, real mysql should be used from
+gl-mail-api service.
+
 Aritcles:
 
 https://mycodesmells.com/post/authentication-in-grpc
