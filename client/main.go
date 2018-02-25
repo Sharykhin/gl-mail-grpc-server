@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	address = "localhost:50051"
+	address = "172.20.0.3:50051"
 )
 
 var cert = "server.crt"

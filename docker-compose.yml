@@ -13,6 +13,8 @@ services:
       - gl-mail-grpc-server-mysql
     depends_on:
       - gl-mail-grpc-server-mysql
+    ports:
+      - 50051:50051
 
   gl-mail-grpc-server-mysql:
     container_name: gl-mail-grpc-server-mysql
