@@ -20,7 +20,7 @@ Usage:
 
 Locally:
 ```bash
-SERVER_SOURCE=127.0.0.1:50051 go run main.go
+DB_SOURCE="root:root@tcp(localhost:3306)/gl_mail_api?parseTime=true" SERVER_SOURCE=127.0.0.1:50051 go run main.go
 ```
 
 Docker:
