@@ -10,15 +10,24 @@ import (
 	"fmt"
 
 	"github.com/Sharykhin/gl-mail-grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
 	address = "localhost:50051"
 )
 
+var cert = "server.crt"
+
 func main() {
+
+	cred, err := credentials.NewClientTLSFromFile(cert, "")
+	if err != nil {
+		log.Fatalf("could not load tls cert: %s", err)
+	}
+
 	// Set up a connection to the gRPC server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
