@@ -1,0 +1,11 @@
+version: "2.1"
+
+services:
+  gl-mail-grpc-server-golang:
+    container_name: gl-mail-grpc-server-golang
+    image: gl-mail-grpc-server-golang
+    build:
+      context: .
+      dockerfile: .docker/golang/Dockerfile
+    env_file:
+      - ./.docker/golang/.env
