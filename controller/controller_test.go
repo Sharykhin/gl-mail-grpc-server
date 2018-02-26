@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Sharykhin/gl-mail-grpc"
+	"github.com/Sharykhin/gl-mail-grpc-server/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -16,14 +17,14 @@ type mockStorage struct {
 	mock.Mock
 }
 
-func (m mockStorage) Create(ctx context.Context, fmr *api.FailMailRequest) (*api.FailMailResponse, error) {
+func (m mockStorage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.FailMail, error) {
 	ret := m.Called(ctx, fmr)
 	fm, err := ret.Get(0), ret.Get(1)
 	if err != nil {
 		return nil, err.(error)
 	}
 
-	return fm.(*api.FailMailResponse), nil
+	return fm.(*entity.FailMail), nil
 }
 
 func (m mockStorage) GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error) {
@@ -39,16 +40,16 @@ func TestCreate(t *testing.T) {
 			Reason:  "test reason",
 		}
 
-		fm := &api.FailMailResponse{
+		fm := entity.FailMail{
 			ID:        21,
 			Action:    "test action",
-			Payload:   json.RawMessage(`{"to":"test@test.com"}`),
+			Payload:   entity.Payload(`{"to":"test@test.com"}`),
 			Reason:    "test reason",
-			CreatedAt: time.Now().Format(time.RFC822Z),
+			CreatedAt: entity.JSONTime(time.Now()),
 		}
 
 		m := new(mockStorage)
-		m.On("Create", ctx, &fmr).Return(fm, nil).Once()
+		m.On("Create", ctx, &fmr).Return(&fm, nil).Once()
 
 		tt := &failedMailController{
 			storage: m,

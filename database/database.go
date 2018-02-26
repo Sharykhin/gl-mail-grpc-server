@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Sharykhin/gl-mail-grpc"
+	"github.com/Sharykhin/gl-mail-grpc-server/entity"
 	_ "github.com/go-sql-driver/mysql" // mysql driver dependency
 )
 
@@ -20,7 +21,7 @@ type storage struct {
 	db *sql.DB
 }
 
-func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*api.FailMailResponse, error) {
+func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.FailMail, error) {
 	res, err := s.db.ExecContext(ctx, "INSERT INTO failed_mails(`action`, `payload`, `reason`, `created_at`) VALUES(?, ?, ?, NOW())", fmr.Action, string(fmr.Payload), fmr.Reason)
 	if err != nil {
 		return nil, fmt.Errorf("could not create a new failed message: %v", err)
@@ -31,14 +32,23 @@ func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*api.Fai
 		return nil, fmt.Errorf("could not get last insert id: %v", err)
 	}
 
-	return &api.FailMailResponse{
+	return &entity.FailMail{
 		ID:        id,
 		Action:    fmr.Action,
-		Payload:   fmr.Payload,
+		Payload:   entity.Payload(fmr.Payload),
 		Reason:    fmr.Reason,
-		CreatedAt: time.Now().Format(time.RFC822),
-		DeletedAt: "",
+		CreatedAt: entity.JSONTime(time.Now()),
+		DeletedAt: nil,
 	}, nil
+
+	//return &api.FailMailResponse{
+	//	ID:        id,
+	//	Action:    fmr.Action,
+	//	Payload:   fmr.Payload,
+	//	Reason:    fmr.Reason,
+	//	CreatedAt: time.Now().Format(time.RFC822),
+	//	DeletedAt: "",
+	//}, nil
 }
 
 func (s storage) GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error) {

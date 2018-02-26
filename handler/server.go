@@ -26,7 +26,14 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 		log.Printf("could not create a new failed mail: %v", err)
 		return nil, err
 	}
-	return fm, err
+
+	return &api.FailMailResponse{
+		ID:        fm.ID,
+		Action:    fm.Action,
+		Payload:   []byte(fm.Payload),
+		Reason:    fm.Reason,
+		CreatedAt: fm.CreatedAt.String(),
+	}, err
 }
 
 func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_GetFailMailsServer) error {
