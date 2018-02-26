@@ -12,6 +12,7 @@ var FailedMailCtrl failedMailController
 
 type FailedMailProvider interface {
 	Create(ctx context.Context, fmr *api.FailMailRequest) (*api.FailMailResponse, error)
+	GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error)
 }
 
 type failedMailController struct {
@@ -20,6 +21,10 @@ type failedMailController struct {
 
 func (c failedMailController) Create(ctx context.Context, fmr *api.FailMailRequest) (*api.FailMailResponse, error) {
 	return c.storage.Create(ctx, fmr)
+}
+
+func (c failedMailController) GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error) {
+	return c.storage.GetList(ctx, limit, offset)
 }
 
 func init() {

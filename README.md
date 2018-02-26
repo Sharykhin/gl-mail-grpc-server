@@ -15,6 +15,20 @@ Build all containers:
 docker-compose build
 ```
 
+Generating files locally:
+```bash
+openssl genrsa -out server.key 2048
+openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+```
+
+Put you host into *Common Name*: 127.0.0.1 
+```bash
+openssl req -new -sha256 -key server.key -out server.csr
+openssl x509 -req -sha256 -in server.csr -signkey server.key -out server.crt -days 3650
+```
+
+Put you host into *Common Name*: 127.0.0.1 
+
 Usage:
 ------
 

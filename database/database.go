@@ -41,6 +41,26 @@ func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*api.Fai
 	}, nil
 }
 
+func (s storage) GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT `id`, `action`, `reason`, `payload`, `created_at` FROM failed_mails LIMIT ? OFFSET ?", limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("could not make a select statement: %v", err)
+	}
+	defer rows.Close() // nolint: errcheck
+
+	var fm []api.FailMailResponse
+	for rows.Next() {
+		var m api.FailMailResponse
+		err := rows.Scan(&m.ID, &m.Action, &m.Reason, &m.Payload, &m.CreatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("could not scan a row to struct %v: %v", m, err)
+		}
+		fm = append(fm, m)
+	}
+
+	return fm, rows.Err()
+}
+
 func init() {
 	dbSource := os.Getenv("DB_SOURCE")
 	db, err := sql.Open("mysql", dbSource)

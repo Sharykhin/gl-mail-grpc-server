@@ -9,41 +9,68 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"flag"
+
+	"io"
+
 	"github.com/Sharykhin/gl-mail-grpc"
 	"google.golang.org/grpc/credentials"
 )
 
 const (
-	address = "127.0.0.1:50051"
+	address = "localhost:50051"
 )
 
 var cert = "server.crt"
 
 func main() {
 
+	action := flag.String("action", "create", "type of action")
+	flag.Parse()
 	cred, err := credentials.NewClientTLSFromFile(cert, "")
 	if err != nil {
-		log.Fatalf("could not load tls cert: %s", err)
+		log.Fatalf("Could not load tls cert: %s", err)
 	}
 
 	// Set up a connection to the gRPC server.
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Could not connet to a grpc server: %v", err)
 	}
 	defer conn.Close()
 	// Creates a new CustomerClient
 	client := api.NewFailMailClient(conn)
+	switch *action {
+	case "create":
+		f := &api.FailMailRequest{
+			Action:  "test action",
+			Payload: json.RawMessage(`{"to": "chapal@inbox.ru"}`),
+			Reason:  "test reason",
+		}
 
-	f := &api.FailMailRequest{
-		Action:  "test action",
-		Payload: json.RawMessage(`{"to": "chapal@inbox.ru"}`),
-		Reason:  "test reason",
+		resp, err := client.CreateFailMail(context.Background(), f)
+		if err != nil {
+			log.Fatalf("Could not create a failed message: %v", err)
+		}
+		fmt.Println(resp)
+	case "list":
+		filter := &api.FailMailFilter{Limit: 10, Offset: 0}
+		ctx := context.Background()
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		stream, err := client.GetFailMails(ctx, filter)
+		if err != nil {
+			log.Fatalf("Could not stream fail mails: %v", err)
+		}
+		for {
+			m, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("%v.GetFailMails(_) = _, %v", client, err)
+			}
+			log.Printf("fail mail: %v", m)
+		}
 	}
-
-	resp, err := client.CreateFailMail(context.Background(), f)
-	if err != nil {
-		log.Fatalf("Could not create a failed message: %v", err)
-	}
-	fmt.Println(resp)
 }
