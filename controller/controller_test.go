@@ -27,8 +27,14 @@ func (m mockStorage) Create(ctx context.Context, fmr *api.FailMailRequest) (*ent
 	return fm.(*entity.FailMail), nil
 }
 
-func (m mockStorage) GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error) {
-	return nil, nil
+func (m mockStorage) GetList(ctx context.Context, limit, offset int64) ([]entity.FailMail, error) {
+	ret := m.Called(ctx, limit, offset)
+	fm, err := ret.Get(0), ret.Get(1)
+	if err != nil {
+		return nil, err.(error)
+	}
+
+	return fm.([]entity.FailMail), nil
 }
 
 func TestCreate(t *testing.T) {

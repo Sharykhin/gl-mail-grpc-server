@@ -37,13 +37,20 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 }
 
 func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_GetFailMailsServer) error {
-	log.Printf("Get list of failed messages: %s \n", filter)
+	log.Printf("GetFailMails is called with request: %s \n", filter)
 	mm, err := controller.FailedMailCtrl.GetList(context.Background(), filter.Limit, filter.Offset)
 	if err != nil {
 		return fmt.Errorf("could not get list: %v", err)
 	}
 	for _, m := range mm {
-		if err := stream.Send(&m); err != nil {
+		mr := api.FailMailResponse{
+			ID:        m.ID,
+			Action:    m.Action,
+			Payload:   m.Payload,
+			Reason:    m.Reason,
+			CreatedAt: m.CreatedAt.String(),
+		}
+		if err := stream.Send(&mr); err != nil {
 			return fmt.Errorf("could not send entity into a stream: %v", err)
 		}
 	}

@@ -40,35 +40,26 @@ func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.
 		CreatedAt: entity.JSONTime(time.Now()),
 		DeletedAt: nil,
 	}, nil
-
-	//return &api.FailMailResponse{
-	//	ID:        id,
-	//	Action:    fmr.Action,
-	//	Payload:   fmr.Payload,
-	//	Reason:    fmr.Reason,
-	//	CreatedAt: time.Now().Format(time.RFC822),
-	//	DeletedAt: "",
-	//}, nil
 }
 
-func (s storage) GetList(ctx context.Context, limit, offset int64) ([]api.FailMailResponse, error) {
-	rows, err := s.db.QueryContext(ctx, "SELECT `id`, `action`, `reason`, `payload`, `created_at` FROM failed_mails LIMIT ? OFFSET ?", limit, offset)
+func (s storage) GetList(ctx context.Context, limit, offset int64) ([]entity.FailMail, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT `id`, `action`, `reason`, `payload`, `created_at`, `deleted_at` FROM failed_mails LIMIT ? OFFSET ?", limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("could not make a select statement: %v", err)
 	}
 	defer rows.Close() // nolint: errcheck
 
-	var fm []api.FailMailResponse
+	var fms []entity.FailMail
 	for rows.Next() {
-		var m api.FailMailResponse
-		err := rows.Scan(&m.ID, &m.Action, &m.Reason, &m.Payload, &m.CreatedAt)
+		var fm entity.FailMail
+		err := rows.Scan(&fm.ID, &fm.Action, &fm.Reason, &fm.Payload, &fm.CreatedAt, &fm.DeletedAt)
 		if err != nil {
-			return nil, fmt.Errorf("could not scan a row to struct %v: %v", m, err)
+			return nil, fmt.Errorf("could not scan a row to struct %v: %v", fm, err)
 		}
-		fm = append(fm, m)
+		fms = append(fms, fm)
 	}
 
-	return fm, rows.Err()
+	return fms, rows.Err()
 }
 
 func init() {
