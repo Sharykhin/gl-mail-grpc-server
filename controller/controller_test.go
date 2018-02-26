@@ -9,6 +9,7 @@ import (
 
 	"github.com/Sharykhin/gl-mail-grpc"
 	"github.com/Sharykhin/gl-mail-grpc-server/entity"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -70,5 +71,28 @@ func TestCreate(t *testing.T) {
 		assert.NotNil(t, fml)
 		assert.Equal(t, "test action", fml.Action)
 		assert.Equal(t, "test reason", fml.Reason)
+	})
+	t.Run("error", func(t *testing.T) {
+		ctx := context.Background()
+		fmr := api.FailMailRequest{
+			Action:  "test action",
+			Payload: json.RawMessage(`{"to":"test@test.com"}`),
+			Reason:  "test reason",
+		}
+
+		errEx := errors.New("something went wring")
+		m := new(mockStorage)
+		m.On("Create", ctx, &fmr).Return(nil, errEx).Once()
+
+		tt := &failedMailController{
+			storage: m,
+		}
+
+		fml, err := tt.Create(ctx, &fmr)
+		m.AssertExpectations(t)
+
+		assert.NotNil(t, err)
+		assert.Nil(t, fml)
+		assert.Equal(t, "something went wring", err.Error())
 	})
 }
