@@ -6,12 +6,13 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"encoding/json"
 	"fmt"
 
 	"flag"
 
 	"io"
+
+	"encoding/json"
 
 	"github.com/Sharykhin/gl-mail-grpc"
 	"google.golang.org/grpc/credentials"
