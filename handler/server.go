@@ -16,29 +16,6 @@ import (
 type server struct {
 }
 
-// TODO: think how to mock this func
-func validate(fmr *api.FailMailRequest) error {
-	if strings.Trim(fmr.Action, "") == "" {
-		return fmt.Errorf("action is required")
-	}
-
-	if fmr.Payload == nil {
-		return fmt.Errorf("payload is required")
-	}
-
-	var stuff struct{}
-	err := json.Unmarshal(fmr.Payload, &stuff)
-	if err != nil {
-		return fmt.Errorf("payload must be a valid json")
-	}
-
-	if strings.Trim(fmr.Reason, " ") == "" {
-		return fmt.Errorf("reason is required")
-	}
-
-	return nil
-}
-
 func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*api.FailMailResponse, error) {
 	log.Printf("CreateFailMail is called with request: %v \n", fmr)
 	if err := validate(fmr); err != nil {
@@ -63,5 +40,27 @@ func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_Get
 			return fmt.Errorf("could not send entity into a stream: %v", err)
 		}
 	}
+	return nil
+}
+
+func validate(fmr *api.FailMailRequest) error {
+	if strings.Trim(fmr.Action, "") == "" {
+		return fmt.Errorf("action is required")
+	}
+
+	if fmr.Payload == nil {
+		return fmt.Errorf("payload is required")
+	}
+
+	var stuff struct{}
+	err := json.Unmarshal(fmr.Payload, &stuff)
+	if err != nil {
+		return fmt.Errorf("payload must be a valid json")
+	}
+
+	if strings.Trim(fmr.Reason, " ") == "" {
+		return fmt.Errorf("reason is required")
+	}
+
 	return nil
 }
