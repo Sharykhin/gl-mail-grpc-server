@@ -2,10 +2,8 @@ package handler
 
 import (
 	"context"
-
-	"log"
-
 	"fmt"
+	"log"
 
 	"github.com/Sharykhin/gl-mail-grpc"
 	"github.com/Sharykhin/gl-mail-grpc-server/controller"

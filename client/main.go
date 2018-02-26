@@ -54,7 +54,7 @@ func main() {
 		}
 		fmt.Println(resp)
 	case "list":
-		filter := &api.FailMailFilter{Limit: 10, Offset: 0}
+		filter := &api.FailMailFilter{Limit: 3, Offset: 0}
 		ctx := context.Background()
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
