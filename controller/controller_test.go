@@ -58,7 +58,7 @@ func TestCreate(t *testing.T) {
 		m := new(mockStorage)
 		m.On("Create", ctx, &fmr).Return(&fm, nil).Once()
 
-		tt := &failedMailController{
+		tt := &failedMail{
 			storage: m,
 		}
 
@@ -84,7 +84,7 @@ func TestCreate(t *testing.T) {
 		m := new(mockStorage)
 		m.On("Create", ctx, &fmr).Return(nil, errEx).Once()
 
-		tt := &failedMailController{
+		tt := &failedMail{
 			storage: m,
 		}
 

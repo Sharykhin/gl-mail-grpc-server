@@ -21,6 +21,7 @@ type storage struct {
 	db *sql.DB
 }
 
+// Create creates a new fail mail row in a database
 func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.FailMail, error) {
 	res, err := s.db.ExecContext(ctx, "INSERT INTO failed_mails(`action`, `payload`, `reason`, `created_at`) VALUES(?, ?, ?, NOW())", fmr.Action, string(fmr.Payload), fmr.Reason)
 	if err != nil {
@@ -42,6 +43,7 @@ func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.
 	}, nil
 }
 
+// GetList returns limited number of rows
 func (s storage) GetList(ctx context.Context, limit, offset int64) ([]entity.FailMail, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT `id`, `action`, `reason`, `payload`, `created_at`, `deleted_at` FROM failed_mails LIMIT ? OFFSET ?", limit, offset)
 	if err != nil {

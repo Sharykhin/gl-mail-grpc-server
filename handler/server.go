@@ -21,7 +21,7 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 	if err := validate(fmr); err != nil {
 		return nil, err
 	}
-	fm, err := controller.FailedMailCtrl.Create(ctx, fmr)
+	fm, err := controller.FailMail.Create(ctx, fmr)
 	if err != nil {
 		log.Printf("could not create a new failed mail: %v", err)
 		return nil, err
@@ -38,7 +38,7 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 
 func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_GetFailMailsServer) error {
 	log.Printf("GetFailMails is called with request: %s \n", filter)
-	mm, err := controller.FailedMailCtrl.GetList(context.Background(), filter.Limit, filter.Offset)
+	mm, err := controller.FailMail.GetList(context.Background(), filter.Limit, filter.Offset)
 	if err != nil {
 		return fmt.Errorf("could not get list: %v", err)
 	}
