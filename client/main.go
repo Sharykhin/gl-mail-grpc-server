@@ -38,7 +38,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not connet to a grpc server: %v", err)
 	}
-	defer conn.Close()
+	defer conn.Close() // nolint: errcheck
 	// Creates a new CustomerClient
 	client := api.NewFailMailClient(conn)
 	switch *action {
@@ -55,7 +55,7 @@ func main() {
 		}
 		fmt.Println(resp)
 	case "list":
-		filter := &api.FailMailFilter{Limit: 3, Offset: 0}
+		filter := &api.FailMailFilter{Limit: 5, Offset: 0}
 		ctx := context.Background()
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()

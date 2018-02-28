@@ -21,7 +21,6 @@ type storage struct {
 	db *sql.DB
 }
 
-// Create creates a new fail mail row in a database
 func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.FailMail, error) {
 	res, err := s.db.ExecContext(ctx, "INSERT INTO failed_mails(`action`, `payload`, `reason`, `created_at`) VALUES(?, ?, ?, NOW())", fmr.Action, string(fmr.Payload), fmr.Reason)
 	if err != nil {
@@ -33,17 +32,16 @@ func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.
 		return nil, fmt.Errorf("could not get last insert id: %v", err)
 	}
 
-	return &entity.FailMail{
-		ID:        id,
-		Action:    fmr.Action,
-		Payload:   entity.Payload(fmr.Payload),
-		Reason:    fmr.Reason,
-		CreatedAt: entity.JSONTime(time.Now()),
-		DeletedAt: nil,
-	}, nil
+	fm := entity.FailMail{}
+	fm.ID = id
+	fm.Action = fmr.Action
+	fm.Payload = fmr.Payload
+	fm.Reason = fmr.Reason
+	fm.CreatedAt = entity.JSONTime(time.Now()).String()
+
+	return &fm, nil
 }
 
-// GetList returns limited number of rows
 func (s storage) GetList(ctx context.Context, limit, offset int64) ([]entity.FailMail, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT `id`, `action`, `reason`, `payload`, `created_at`, `deleted_at` FROM failed_mails LIMIT ? OFFSET ?", limit, offset)
 	if err != nil {

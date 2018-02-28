@@ -2,18 +2,17 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
-
 	"strings"
 
-	"encoding/json"
-
 	"github.com/Sharykhin/gl-mail-grpc"
-	"github.com/Sharykhin/gl-mail-grpc-server/controller"
+	"github.com/Sharykhin/gl-mail-grpc-server/contract"
 )
 
 type server struct {
+	storage contract.FailedMailProvider
 }
 
 func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*api.FailMailResponse, error) {
@@ -21,7 +20,7 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 	if err := validate(fmr); err != nil {
 		return nil, err
 	}
-	fm, err := controller.FailMail.Create(ctx, fmr)
+	fm, err := s.storage.Create(ctx, fmr)
 	if err != nil {
 		log.Printf("could not create a new failed mail: %v", err)
 		return nil, err
@@ -30,27 +29,31 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 	return &api.FailMailResponse{
 		ID:        fm.ID,
 		Action:    fm.Action,
-		Payload:   []byte(fm.Payload),
+		Payload:   fm.Payload,
 		Reason:    fm.Reason,
-		CreatedAt: fm.CreatedAt.String(),
+		CreatedAt: fm.CreatedAt,
 	}, err
 }
 
 func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_GetFailMailsServer) error {
 	log.Printf("GetFailMails is called with request: %s \n", filter)
-	mm, err := controller.FailMail.GetList(context.Background(), filter.Limit, filter.Offset)
+	fml, err := s.storage.GetList(context.Background(), filter.Limit, filter.Offset)
 	if err != nil {
 		return fmt.Errorf("could not get list: %v", err)
 	}
-	for _, m := range mm {
-		mr := api.FailMailResponse{
-			ID:        m.ID,
-			Action:    m.Action,
-			Payload:   m.Payload,
-			Reason:    m.Reason,
-			CreatedAt: m.CreatedAt.String(),
+
+	for _, fm := range fml {
+		m := api.FailMailEntity{
+			ID:        fm.ID,
+			Action:    fm.Action,
+			Payload:   fm.Payload,
+			Reason:    fm.Reason,
+			CreatedAt: fm.CreatedAt,
 		}
-		if err := stream.Send(&mr); err != nil {
+		if fm.DeletedAt != nil {
+			m.DeletedAt = fm.DeletedAt.String()
+		}
+		if err := stream.Send(&m); err != nil {
 			return fmt.Errorf("could not send entity into a stream: %v", err)
 		}
 	}
