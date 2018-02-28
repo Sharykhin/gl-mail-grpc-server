@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"github.com/Sharykhin/gl-mail-grpc"
+	"encoding/json"
 )
 
 // JSONTime represents time format that should be returned to a client
@@ -16,6 +16,10 @@ func (t JSONTime) String() string {
 
 // FailMail internal entity that with nullable DeletedAt field
 type FailMail struct {
-	api.FailMailEntity
+	ID        int64
+	Action    string
+	Payload   json.RawMessage
+	Reason    string
+	CreatedAt JSONTime
 	DeletedAt *JSONTime
 }

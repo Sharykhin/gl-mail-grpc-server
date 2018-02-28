@@ -32,14 +32,14 @@ func (s storage) Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.
 		return nil, fmt.Errorf("could not get last insert id: %v", err)
 	}
 
-	fm := entity.FailMail{}
-	fm.ID = id
-	fm.Action = fmr.Action
-	fm.Payload = fmr.Payload
-	fm.Reason = fmr.Reason
-	fm.CreatedAt = entity.JSONTime(time.Now()).String()
-
-	return &fm, nil
+	return &entity.FailMail{
+		ID:        id,
+		Action:    fmr.Action,
+		Payload:   fmr.Payload,
+		Reason:    fmr.Reason,
+		CreatedAt: entity.JSONTime(time.Now()),
+		DeletedAt: nil,
+	}, nil
 }
 
 func (s storage) GetList(ctx context.Context, limit, offset int64) ([]entity.FailMail, error) {

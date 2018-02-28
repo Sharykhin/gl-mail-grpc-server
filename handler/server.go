@@ -31,7 +31,7 @@ func (s server) CreateFailMail(ctx context.Context, fmr *api.FailMailRequest) (*
 		Action:    fm.Action,
 		Payload:   fm.Payload,
 		Reason:    fm.Reason,
-		CreatedAt: fm.CreatedAt,
+		CreatedAt: fm.CreatedAt.String(),
 	}, err
 }
 
@@ -43,12 +43,12 @@ func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_Get
 	}
 
 	for _, fm := range fml {
-		m := api.FailMailEntity{
+		m := api.FailMailResponse{
 			ID:        fm.ID,
 			Action:    fm.Action,
 			Payload:   fm.Payload,
 			Reason:    fm.Reason,
-			CreatedAt: fm.CreatedAt,
+			CreatedAt: fm.CreatedAt.String(),
 		}
 		if fm.DeletedAt != nil {
 			m.DeletedAt = fm.DeletedAt.String()
