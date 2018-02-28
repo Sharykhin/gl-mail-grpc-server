@@ -62,6 +62,17 @@ func (s storage) GetList(ctx context.Context, limit, offset int64) ([]entity.Fai
 	return fms, rows.Err()
 }
 
+func (s storage) Count(ctx context.Context) (int64, error) {
+	var count int64
+	row := s.db.QueryRowContext(ctx, "SELECT COUNT(id) as `total` from failed_mails")
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("could not scan into a count variable: %v", err)
+	}
+
+	return count, nil
+}
+
 func init() {
 	dbSource := os.Getenv("DB_SOURCE")
 	db, err := sql.Open("mysql", dbSource)

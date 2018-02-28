@@ -60,6 +60,18 @@ func (s server) GetFailMails(filter *api.FailMailFilter, stream api.FailMail_Get
 	return nil
 }
 
+func (s server) CountFailMails(ctx context.Context, in *api.Empty) (*api.CountResponse, error) {
+	log.Println("CountFailMails is called")
+	count, err := s.storage.Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.CountResponse{
+		Total: count,
+	}, nil
+}
+
 func validate(fmr *api.FailMailRequest) error {
 	if strings.Trim(fmr.Action, "") == "" {
 		return fmt.Errorf("action is required")

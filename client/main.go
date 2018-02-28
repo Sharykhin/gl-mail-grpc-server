@@ -73,5 +73,12 @@ func main() {
 			}
 			log.Printf("fail mail: %v", m)
 		}
+	case "count":
+		ctx := context.Background()
+		res, err := client.CountFailMails(ctx, &api.Empty{})
+		if err != nil {
+			log.Fatalf("Could not count: %v", err)
+		}
+		log.Println(res)
 	}
 }

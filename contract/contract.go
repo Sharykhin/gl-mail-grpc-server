@@ -11,4 +11,5 @@ import (
 type FailedMailProvider interface {
 	Create(ctx context.Context, fmr *api.FailMailRequest) (*entity.FailMail, error)
 	GetList(ctx context.Context, limit, offset int64) ([]entity.FailMail, error)
+	Count(ctx context.Context) (int64, error)
 }
