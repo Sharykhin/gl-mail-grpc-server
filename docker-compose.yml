@@ -1,4 +1,8 @@
-version: "2.1"
+version: "3"
+
+networks:
+  grpc-1:
+    driver: bridge
 
 services:
   gl-mail-grpc-server-golang:
@@ -15,6 +19,8 @@ services:
       - gl-mail-grpc-server-mysql
     ports:
       - 50051:50051
+    networks:
+      - grpc-1
 
   gl-mail-grpc-server-mysql:
     container_name: gl-mail-grpc-server-mysql
@@ -22,3 +28,5 @@ services:
     build: .docker/mysql
     env_file:
       - ./.docker/mysql/.env
+    networks:
+      - grpc-1
