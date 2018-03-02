@@ -22,14 +22,14 @@ const (
 	address = "localhost:50051"
 )
 
-var cert = "server.crt"
+var cert = "../server.crt"
 
 func main() {
 
 	action := flag.String("action", "create", "type of action")
 	flag.Parse()
 	cred, err := credentials.NewClientTLSFromFile(cert, "")
-	fmt.Println(cred)
+
 	if err != nil {
 		log.Fatalf("Could not load tls cert: %s", err)
 	}

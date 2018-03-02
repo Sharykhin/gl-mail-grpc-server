@@ -24,7 +24,8 @@ openssl req -new -sha256 -key server.key -out server.csr
 openssl x509 -req -sha256 -in server.csr -signkey server.key -out server.crt -days 3650
 ```
 
-Put you host into *Common Name*: 127.0.0.1
+Put you host into *Common Name*: 127.0.0.1  
+For docker use the following name: gl-mail-grpc-server-golang
 
 Usage:
 ------
