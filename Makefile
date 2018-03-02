@@ -20,4 +20,7 @@ clean:
 	rm -rf $(BINARY_NAME)
 
 generate-keys:
-	openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 -nodes -subj '/CN=127.0.0.1'
+	openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 -nodes -subj '/CN=localhost'
+
+docker-generate-keys:
+	openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 -nodes -subj '/CN=gl-mail-grpc-server-golang'

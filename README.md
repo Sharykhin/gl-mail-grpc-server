@@ -27,6 +27,18 @@ openssl x509 -req -sha256 -in server.csr -signkey server.key -out server.crt -da
 Put you host into *Common Name*: 127.0.0.1  
 For docker use the following name: gl-mail-grpc-server-golang
 
+Or just use Makefile command:
+```bash
+make generate-keys
+```
+
+For Docker use:
+```bash
+make docker-generate-keys
+```
+
+But keep in mind that it would generate
+
 Usage:
 ------
 ##### Docker:
