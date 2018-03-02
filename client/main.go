@@ -15,6 +15,7 @@ import (
 	"encoding/json"
 
 	"github.com/Sharykhin/gl-mail-grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
@@ -27,14 +28,13 @@ func main() {
 
 	action := flag.String("action", "create", "type of action")
 	flag.Parse()
-	//cred, err := credentials.NewClientTLSFromFile(cert, "")
-	//if err != nil {
-	//	log.Fatalf("Could not load tls cert: %s", err)
-	//}
+	cred, err := credentials.NewClientTLSFromFile(cert, "")
+	if err != nil {
+		log.Fatalf("Could not load tls cert: %s", err)
+	}
 
 	// Set up a connection to the gRPC server.
-	//conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
 	if err != nil {
 		log.Fatalf("Could not connet to a grpc server: %v", err)
 	}
