@@ -6,12 +6,16 @@ This server is responsible for managing mails
 Requirements:
 -------------
 
-[docker]()
+[docker](https://www.docker.com)
+
+Attention:
+----------
+By default app environment is set to **dev** and communication
+with grpc server goes with insecure way. To switch to secure
+change *APP_ENV* to **prod**
 
 Generating keys:
 -----------------
-
-
 Generating files locally:
 ```bash
 openssl genrsa -out server.key 2048

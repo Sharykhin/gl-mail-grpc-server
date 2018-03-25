@@ -17,6 +17,7 @@ import (
 var (
 	crt string
 	key string
+	env string
 )
 
 // ListenAndServe creates grps server and start listening income connections
@@ -26,26 +27,37 @@ func ListenAndServe(serverSource string) error {
 		return fmt.Errorf("failed to listen: %v", err)
 	}
 
-	// Create the TLS credentials
-	cred, err := credentials.NewServerTLSFromFile(crt, key)
-	if err != nil {
-		return fmt.Errorf("could not load TLS keys: %v", err)
+	var s *grpc.Server
+	if env == "prod" {
+		// Create the TLS credentials
+		cred, err := credentials.NewServerTLSFromFile(crt, key)
+		if err != nil {
+			return fmt.Errorf("could not load TLS keys: %v", err)
+		}
+
+		// Creates a new gRPC server
+		s = grpc.NewServer(grpc.Creds(cred))
+	} else {
+		// Creates a new gRPC server
+		s = grpc.NewServer()
 	}
 
-	// Creates a new gRPC server
-	s := grpc.NewServer(grpc.Creds(cred))
 	storage := database.Storage
 	api.RegisterFailMailServer(s, &server{storage: storage})
+	fmt.Printf("Start listening on %s. Env: %s \n", serverSource, env)
 	return s.Serve(lis)
 }
 
 func init() {
-	crt = os.Getenv("KEY_SERVER_CRT")
-	if crt == "" {
-		log.Fatal("Env variable KEY_SERVER_CRT is not specified")
-	}
-	key = os.Getenv("KEY_SERVER_KEY")
-	if key == "" {
-		log.Fatal("Env variable KEY_SERVER_KEY is not specified")
+	env = os.Getenv("APP_ENV")
+	if env == "prod" {
+		crt = os.Getenv("KEY_SERVER_CRT")
+		if crt == "" {
+			log.Fatal("Env variable KEY_SERVER_CRT is not specified")
+		}
+		key = os.Getenv("KEY_SERVER_KEY")
+		if key == "" {
+			log.Fatal("Env variable KEY_SERVER_KEY is not specified")
+		}
 	}
 }

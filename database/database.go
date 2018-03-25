@@ -77,7 +77,11 @@ func init() {
 	dbSource := os.Getenv("DB_SOURCE")
 	db, err := sql.Open("mysql", dbSource)
 	if err != nil {
-		log.Fatalf("cone not connect to mysql: %v", err)
+		log.Fatalf("Could not connect to a mysql: %v", err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatalf("Ping failed: %v", err)
 	}
 
 	Storage = storage{db: db}
