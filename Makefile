@@ -1,4 +1,23 @@
+.PHONY: test build pack upload
+
 BINARY_NAME=gl-mail-grps-server
+GOARCH=amd64
+CGO_ENABLED=0
+GOOS=linux
+VER=v1
+
+test:
+	go test ./...
+
+build:
+	go build -ldflags "-X main.version=$(VER)" -o $(BINARY_NAME) .
+
+pack:
+	GOOS=linux make build
+	docker-compose build gl-mail-grpc-server-golang
+
+upload:
+	docker push chapal/gl-mail-grpc-server-golang:$(VER)
 
 serve:
 	DB_SOURCE="root:root@tcp(localhost:3306)/gl_mail_api?parseTime=true" KEY_SERVER_CRT=server.crt KEY_SERVER_KEY=server.key SERVER_SOURCE=localhost:50051 go run main.go
@@ -11,9 +30,6 @@ prod: build
 
 lint:
 	gometalinter ./...
-
-build:
-	go build -o $(BINARY_NAME) -v
 
 clean:
 	go clean
