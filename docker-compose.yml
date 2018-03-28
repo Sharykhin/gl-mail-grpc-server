@@ -24,7 +24,7 @@ services:
 
   gl-mail-grpc-server-mysql:
     container_name: gl-mail-grpc-server-mysql
-    image: gl-mail-grpc-server-mysql
+    image: chapal/gl-mail-grpc-server-mysql:v1
     build: .docker/mysql
     env_file:
       - ./.docker/mysql/.env
