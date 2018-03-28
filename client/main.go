@@ -28,18 +28,11 @@ func main() {
 
 	action := flag.String("action", "create", "type of action")
 	flag.Parse()
-	cred, err := credentials.NewClientTLSFromFile(cert, "")
-
-	if err != nil {
-		log.Fatalf("Could not load tls cert: %s", err)
-	}
 
 	// Set up a connection to the gRPC server.
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
-	if err != nil {
-		log.Fatalf("Could not connet to a grpc server: %v", err)
-	}
+	conn := createConn()
 	defer conn.Close() // nolint: errcheck
+
 	// Creates a new CustomerClient
 	client := api.NewFailMailClient(conn)
 	switch *action {
@@ -82,4 +75,20 @@ func main() {
 		}
 		log.Println(res)
 	}
+}
+
+func createConn() *grpc.ClientConn {
+	cred, err := credentials.NewClientTLSFromFile(cert, "")
+
+	if err != nil {
+		log.Fatalf("Could not load tls cert: %s", err)
+	}
+
+	// Set up a connection to the gRPC server.
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
+	if err != nil {
+		log.Fatalf("Could not connet to a grpc server: %v", err)
+	}
+
+	return conn
 }
