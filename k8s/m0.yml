@@ -19,6 +19,7 @@ spec:
       value: "test"
     - name: MYSQL_ROOT_PASSWORD
       value: "root"
+
   - name: gl-mail-grpc-server-golang
     image: chapal/gl-mail-grpc-server-golang:v1
     ports:

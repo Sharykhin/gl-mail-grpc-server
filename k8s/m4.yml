@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gl-mail-grpc-server-mysql-service
+  labels:
+    app: gl-mail-grpc-server
+spec:
+  ports:
+  # the port that this service should serve on
+  - port: 3306
+# label keys and values that must match in order to receive traffic for this service
+  selector:
+    name: gl-mail-grpc-server-pod
