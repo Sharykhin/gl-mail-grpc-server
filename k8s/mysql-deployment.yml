@@ -1,62 +1,52 @@
 apiVersion: v1
+kind: Pod
+metadata:
+  name: gl-mail-grpc-server-mysql-pod
+  labels:
+    name: gl-mail-grpc-server-mysql-pod
+spec:
+  containers:
+  - name: gl-mail-grpc-server-mysql
+    image: chapal/gl-mail-grpc-server-mysql:v1
+    ports:
+    - containerPort: 3306
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "root"
+    - name: MYSQL_DATABASE
+      value: "test"
+    - name: MYSQL_USER
+      value: "test"
+    - name: MYSQL_PASSWORD
+      value: "test"
+    volumeMounts:
+    - name: mysql-persistent-storage
+      mountPath: /var/lib/mysql
+  volumes:
+  - name: mysql-persistent-storage
+    persistentVolumeClaim:
+      claimName: gl-mail-grpc-server-mysql-volume
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: gl-mail-grpc-server-mysql
   labels:
-    app: gl-mail-grpc-server
+    name: gl-mail-grpc-server-mysql
 spec:
   ports:
-    - port: 3306
+  - port: 3306
   selector:
-    app: gl-mail-grpc-server
-    tier: mysql
+    name: gl-mail-grpc-server-mysql-pod
   clusterIP: None
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pv-claim
-  labels:
-    app: gl-mail-grpc-server
+  name: gl-mail-grpc-server-mysql-volume
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
----
-apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
-kind: Deployment
-metadata:
-  name: gl-mail-grpc-server-mysql
-  labels:
-    app: gl-mail-grpc-server
-spec:
-  selector:
-    matchLabels:
-      app: gl-mail-grpc-server
-      tier: mysql
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: gl-mail-grpc-server
-        tier: mysql
-    spec:
-      containers:
-      - image: mysql:5.6
-        name: mysql
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "root"
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim

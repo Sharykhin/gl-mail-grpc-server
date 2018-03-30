@@ -1,34 +1,34 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: gl-mail-grpc-server-golang-deployment
-  labels:
-    app: gl-mail-grpc-server
-spec:
-  selector:
-    matchLabels:
-      app: gl-mail-grpc-server
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: gl-mail-grpc-server
-    spec:
-      containers:
-      - name: gl-mail-grpc-server-golang
-        image: chapal/gl-mail-grpc-server-golang:v1
-        ports:
-        - name: gl-service
-          containerPort: 50051
----
 apiVersion: v1
-kind: Service
+kind: Pod
 metadata:
-  name: gl-mail-grpc-server-golang-service
+  name: gl-mail-grpc-server-go-pod
+  labels:
+    name: gl-mail-grpc-server-go-pod
 spec:
-  type: NodePort
+  containers:
+  - name: golang
+    image: chapal/gl-mail-grpc-server-golang:v1
+    ports:
+    - containerPort: 50051
+    env:
+    - name: DB_SOURCE
+      value: "test:test@tcp(gl-mail-grpc-server-mysql:3306)/test?parseTime=true"
+    - name: APP_ENV
+      value: "dev"
+    - name: SERVER_SOURCE
+      value: ":50051"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gl-mail-grpc-server-golang
+  labels:
+    name: gl-mail-grpc-server-golang
+spec:
+  type: LoadBalancer
   selector:
-    app: gl-mail-grpc-server
+    name: gl-mail-grpc-server-go-pod
   ports:
-  - port: 50051
-    targetPort: gl-service
+  - protocol: TCP
+    port: 50051
+    targetPort: 50051
