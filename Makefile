@@ -4,7 +4,6 @@ BINARY_NAME=gl-mail-grps-server
 GOARCH=amd64
 CGO_ENABLED=0
 GOOS=linux
-VER=v1
 
 test:
 	go test ./...

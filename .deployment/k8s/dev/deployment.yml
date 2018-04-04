@@ -1,0 +1,31 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dev
+  labels:
+    name: dev
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: gl-mail-grpc-server
+  namespace: dev
+  labels:
+    app: gl-mail-grpc-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gl-mail-grpc-server
+  template:
+    metadata:
+      labels:
+        name: gl-mail-grpc-server
+    spec:
+      containers:
+      - name: gl-mail-grpc-server-golang
+        image: gcr.io/kubernetes-example-199908/hello-app:2c5c81a
+        env:
+        - name: SERVER_SOURCE
+          value: ":50051"
+        - name: APP_ENV
+          value: "dev"
