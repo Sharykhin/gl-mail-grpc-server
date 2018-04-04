@@ -13,6 +13,8 @@ services:
       dockerfile: .docker/golang/dev/Dockerfile
     env_file:
       - ./.docker/golang/dev/.env
+    volumes:
+      - .:/go/src/github.com/Sharykhin/gl-mail-grpc-server
     links:
       - gl-mail-grpc-server-mysql
     depends_on:

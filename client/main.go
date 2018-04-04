@@ -3,19 +3,18 @@ package main
 import (
 	"log"
 
+	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"fmt"
-
 	"flag"
-
 	"io"
 
 	"encoding/json"
 
 	"github.com/Sharykhin/gl-mail-grpc"
 	"google.golang.org/grpc/credentials"
+	"os"
 )
 
 const (
@@ -78,17 +77,26 @@ func main() {
 }
 
 func createConn() *grpc.ClientConn {
-	cred, err := credentials.NewClientTLSFromFile(cert, "")
+	env := os.Getenv("APP_ENV")
+	if env == "prod" {
+		cred, err := credentials.NewClientTLSFromFile(cert, "")
 
-	if err != nil {
-		log.Fatalf("Could not load tls cert: %s", err)
+		if err != nil {
+			log.Fatalf("Could not load tls cert: %s", err)
+		}
+
+		// Set up a connection to the gRPC server.
+		conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
+		if err != nil {
+			log.Fatalf("Could not connet to a grpc server: %v", err)
+		}
+		return conn
+	} else {
+		// Set up a connection to the gRPC server.
+		conn, err := grpc.Dial(address, grpc.WithInsecure())
+		if err != nil {
+			log.Fatalf("Could not connet to a grpc server: %v", err)
+		}
+		return conn
 	}
-
-	// Set up a connection to the gRPC server.
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(cred))
-	if err != nil {
-		log.Fatalf("Could not connet to a grpc server: %v", err)
-	}
-
-	return conn
 }

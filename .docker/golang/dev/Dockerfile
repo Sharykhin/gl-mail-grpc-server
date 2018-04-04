@@ -4,11 +4,9 @@ ADD . /go/src/github.com/Sharykhin/gl-mail-grpc-server
 
 WORKDIR /go/src/github.com/Sharykhin/gl-mail-grpc-server
 
-RUN go get .
+RUN go get . && go get github.com/canthefason/go-watcher && go install github.com/canthefason/go-watcher/cmd/watcher
 
-#RUN go install github.com/Sharykhin/gl-mail-grpc-server
-
-#ENTRYPOINT /go/bin/gl-mail-grpc-server
+#ENTRYPOINT watcher
 
 CMD tail -f /dev/null
 
