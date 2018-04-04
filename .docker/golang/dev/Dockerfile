@@ -9,8 +9,6 @@ RUN go get . && \
     go install github.com/canthefason/go-watcher/cmd/watcher && \
     go get -u github.com/pressly/goose/cmd/goose
 
-#ENTRYPOINT watcher
-
-CMD tail -f /dev/null
+ENTRYPOINT watcher
 
 EXPOSE 50051

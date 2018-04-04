@@ -56,10 +56,14 @@ docker-compose up
 make migrate
 ```
 
-4. Run the server:
-```bash
-make serve
+When you make ```docker-compose up``` it will run watcher on go files, so each
+change will trigger re-build application. In a terminal output you may see the
+following error:
 ```
+gl-mail-grpc-server-mysql     | 2018-04-04T09:25:23.950720Z 2 [Note] Aborted connection 2 to db: 'test' user: 'test' host: '172.18.0.3' (Got an error reading communication packets)
+```
+So, don't worry about it, when watcher makes re-build it somehow affects mysql connection.
+But it doesn't affect the program itself.
 
 Makefile:
 ```bash
