@@ -91,12 +91,12 @@ func createConn() *grpc.ClientConn {
 			log.Fatalf("Could not connet to a grpc server: %v", err)
 		}
 		return conn
-	} else {
-		// Set up a connection to the gRPC server.
-		conn, err := grpc.Dial(address, grpc.WithInsecure())
-		if err != nil {
-			log.Fatalf("Could not connet to a grpc server: %v", err)
-		}
-		return conn
 	}
+	// Set up a connection to the gRPC server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Could not connet to a grpc server: %v", err)
+	}
+	return conn
+
 }

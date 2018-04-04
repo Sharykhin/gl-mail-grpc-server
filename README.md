@@ -1,7 +1,9 @@
 Mail GRPC Server:
 =================
 
-This server is responsible for managing mails
+This server is responsible for managing mails. Currently is saves failed mails 
+into a storage. Service provides grpc api for creating and getting list of failed
+mails
 
 Requirements:
 -------------
@@ -16,7 +18,7 @@ change *APP_ENV* to **prod**
 
 Generating keys:
 -----------------
-Generating files locally:
+In case you need to generate secure keys locally:
 ```bash
 openssl genrsa -out server.key 2048
 openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
@@ -36,42 +38,36 @@ Or just use Makefile command:
 make generate-keys
 ```
 
-For Docker use:
-```bash
-make docker-generate-keys
-```
-
-But keep in mind that it would generate
-
 Usage:
 ------
-##### Docker:
-Build all containers:
+##### For Development:
+1. Build all containers:
 ```bash
 docker-compose build
 ```
 
-Run containers:
+2. Run containers:
 ```bash
 docker-compose up
 ```
 
-
-##### Locally:
+3. Run migrations:
 ```bash
-DB_SOURCE="root:root@tcp(localhost:3306)/gl_mail_api?parseTime=true" SERVER_SOURCE=127.0.0.1:50051 go run main.go
+make migrate
 ```
 
-or use Makefile:
+4. Run the server:
+```bash
+make serve
+```
+
+Makefile:
 ```bash
 make serve
 ```
 
 TODO:
 -----
-
-Current mysql is added for some test, real mysql should be used from
-gl-mail-api service.
 
 Aritcles:
 

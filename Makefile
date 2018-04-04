@@ -1,4 +1,4 @@
-.PHONY: test build docker-serve serve lint clean generate-keys
+.PHONY: test build docker-serve serve lint clean generate-keys migrate
 
 BINARY_NAME=gl-mail-grps-server
 GOARCH=amd64
@@ -16,6 +16,9 @@ local-serve:
 
 serve:
 	docker-compose exec gl-mail-grpc-server-golang go run *.go
+
+migrate:
+	docker-compose exec gl-mail-grpc-server-golang goose -dir migrations mysql "test:test@tcp(gl-mail-grpc-server-mysql:3306)/test" up
 
 lint:
 	gometalinter ./...
